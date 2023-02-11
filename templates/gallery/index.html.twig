@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+	</style>
+
+	<div class="example-wrapper">
+		{% if app.user %}
+			<h1>{{app.user}}</h1>
+		{% else %}
+			<h1>guest</h2>
+		{% endif %}
+
+		{% if user_albums|length > 0 %}
+			<form method="post" action="{{path('delete_album')}}" onsubmit="return confirm('Альбом и все его фотографии будут удалены. Продолжить?');">
+				{% for album in user_albums %}
+					<a href="{{ path('album', {id: album.id}) }}">{{album.name}}</a>
+					<button type="submit" name="delete_album" value="{{album.id}}">удалить</button>
+					<br>
+				{% endfor %}
+			</form>
+		{% else %}
+			Пока без альбомов!
+		{% endif %}
+
+		{% if app.user %}
+			{{form(album_form)}}{% endif %}
+
+			{% for album in all_albums %}
+				<a href="{{ path('album', {id: album.id}) }}">{{album.name}}</a>
+				<br>
+			{% endfor %}
+
+		</div>
+	{% endblock %}

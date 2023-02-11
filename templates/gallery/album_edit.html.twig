@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+		img {
+			width: 50%;
+			height: auto;
+		}
+	</style>
+
+	<div class="example-wrapper">
+
+		<h1>
+			<a href="{{path('album', {id: album.id})}}">{{album.name}}</a>
+		</h1>
+		<form method="post" action="{{path('edit_album', {id: album.id})}}">
+			<input type="text" id="new_name" name="new_name" required size="10">
+			<button type="submit">переименовать альбом</button>
+		</form>
+
+		{% if photos|length > 0 %}
+			<table>
+				{% for photo in photos %}
+					<tbody>
+						<tr>
+							<td>
+								<a href="{{ asset('public/uploads/photos/' ~ photo.path) }}">
+									<img src="{{ asset('public/uploads/photos/' ~ photo.path) }}"/>
+								</a>
+							</td>
+							<td>
+								<form method="post" action="{{path('delete_photo')}}">
+									<button type="submit" name="delete_photo" value="{{photo.id}}">удалить фото</button>
+								</form>
+							</td>
+							<td>
+								<form method="post" action="{{path('edit_photo')}}">
+									<select name="select_album">
+										{% for album in albums %}
+											<option value="{{album.id}}">{{album.name}}</option>
+										{% endfor %}
+									</select>
+									<button type="submit" name="edit_photo" value="{{photo.id}}">переместить</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+
+
+				{% endfor %}
+			</table>
+		{% else %}
+			Пока без фоток!
+		{% endif %}
+	</div>
+
+
+{% endblock %}

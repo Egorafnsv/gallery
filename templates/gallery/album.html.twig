@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+	<link
+	type="text/css" rel="stylesheet" href="{{asset('public/css/lightgallery.css')}}"/>
+	<!-- lightgallery plugins -->
+	<link type="text/css" rel="stylesheet" href="{{asset('public/css/lg-zoom.css')}}"/>
+	<link type="text/css" rel="stylesheet" href="{{asset('public/css/lg-thumbnail.css')}}"/>
+{% endblock %}
+
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+		img {
+			width: 50%;
+			height: auto;
+		}
+	</style>
+
+	<div class="example-wrapper">
+
+		<h1>{{album.name}}</h1>
+
+		{% if photos|length > 0 %}
+			<div id="lightgallery">
+				{% for photo in photos %}
+					<a href="{{ asset('public/uploads/photos/' ~ photo.path) }}">
+						<img src="{{ asset('public/uploads/photos/' ~ photo.path) }}"/>
+					</a>
+				{% endfor %}
+			</div>
+
+		{% else %}
+			Пока без фоток!
+		{% endif %}
+
+		{% if is_owner %}
+			<form action="{{ path('edit_album', {id: album.id}) }}">
+				<input type="submit" value="Редактировать альбом"/>
+			</form>
+
+			{{ form(photo_form) }}{% endif %}
+		</div>
+
+		<script src="{{asset('public/js/lightgallery.min.js')}}"></script>
+		<script src="{{asset('public/js/plugins/lg-thumbnail.umd.js')}}"></script>
+		<script src="{{asset('public/js/plugins/lg-zoom.umd.js')}}"></script>
+		<script src="{{asset('public/js/start_lg.js')}}"></script>
+
+	{% endblock %}
