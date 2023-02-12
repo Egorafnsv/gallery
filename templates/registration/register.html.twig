@@ -1,16 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Create Account
+{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+	{{ form_start(registrationForm) }}
+	<div class="container mt-3 ml-5">
+		<h1 class="title is-5">Создать аккаунт</h1>
+		<div class="columns">
+			<div class="column is-one-fifth">
+				{{ form_row(registrationForm.username, {
+            label: 'Имя' }) }}
+			</div>
+		</div>
+		<div class="columns">
+			<div class="column is-one-fifth">
+				{{ form_row(registrationForm.plainPassword, {
+            label: 'Пароль' }) }}
+			</div>
+		</div>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+		<div class="columns">
+			<div class="column is-one-fifth">
+				<button type="submit" class="button is-success">Создать</button>
+			</div>
+		</div>
+	</div>
+	{{ form_end(registrationForm) }}
 {% endblock %}

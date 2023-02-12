@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}album - {{album.name}}{% endblock %}
 {% block stylesheets %}
 	<link
 	type="text/css" rel="stylesheet" href="{{asset('public/css/lightgallery.css')}}"/>
@@ -10,25 +10,19 @@
 
 {% block body %}
 	<style>
-		.example-wrapper {
-			margin: 1em auto;
-			max-width: 800px;
-			width: 95%;
-			font: 18px / 1.5 sans-serif;
-		}
-		.example-wrapper code {
-			background: #F5F5F5;
-			padding: 2px 6px;
-		}
-		img {
-			width: 50%;
+		div.lightgallery img {
+			width: 100%;
 			height: auto;
 		}
+
+		.container {
+			padding: 0 6px;
+			width: 35%;
+		}
 	</style>
+	<div class="container is-centered">
 
-	<div class="example-wrapper">
-
-		<h1>{{album.name}}</h1>
+		<h1 class="title is-1 mt-2">{{album.name}}</h1>
 
 		{% if photos|length > 0 %}
 			<div id="lightgallery">
@@ -38,22 +32,35 @@
 					</a>
 				{% endfor %}
 			</div>
-
 		{% else %}
-			Пока без фоток!
+			<h3 class="subtitle is-5 mt-2">Пока ни одной фотографии!</h3>
 		{% endif %}
 
+
 		{% if is_owner %}
-			<form action="{{ path('edit_album', {id: album.id}) }}">
-				<input type="submit" value="Редактировать альбом"/>
-			</form>
-
-			{{ form(photo_form) }}{% endif %}
-		</div>
-
-		<script src="{{asset('public/js/lightgallery.min.js')}}"></script>
-		<script src="{{asset('public/js/plugins/lg-thumbnail.umd.js')}}"></script>
-		<script src="{{asset('public/js/plugins/lg-zoom.umd.js')}}"></script>
-		<script src="{{asset('public/js/start_lg.js')}}"></script>
-
+			<div class="columns">
+				<div class="column">
+					{{ form(photo_form) }}
+				</div>
+			</div>
+			<div class="columns">
+				<div class="column">
+					<form action="{{ path('edit_album', {id: album.id}) }}">
+						<input class="button is-warning is-light" type="submit" value="Редактировать"/>
+					</form>
+				</div>
+			</div>
+			<div class="columns">
+				<div class="column">
+					<form method="post" action="{{path('delete_album')}}" onsubmit="return confirm('Альбом и все его фотографии будут удалены. Продолжить?');">
+						<button class="button is-danger is-light" type="submit" name="delete_album" value="{{album.id}}">удалить</button>
+					</form>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+	<script src="{{asset('public/js/lightgallery.min.js')}}"></script>
+	<script src="{{asset('public/js/plugins/lg-thumbnail.umd.js')}}"></script>
+	<script src="{{asset('public/js/plugins/lg-zoom.umd.js')}}"></script>
+	<script src="{{asset('public/js/start_lg.js')}}"></script>
 	{% endblock %}

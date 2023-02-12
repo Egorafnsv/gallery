@@ -2,30 +2,38 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>
-			{% block title %}Welcome!
-			{% endblock %}
+			{% block title %}{% endblock %}
 		</title>
-		<link
-		rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 		{% block stylesheets %}
 			{{ encore_entry_link_tags('app') }}
 		{% endblock %}
-
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
 	</head>
 	<body>
-		<a href="{{ path('homepage') }}">Home</a>
-		{% if app.user %}
-			Hello, {{app.user}}
-            <a href="/logout">Logout</a> 
-		{% else %}
-			Hello, guest
-            <a href="{{ path('app_login') }}">Login</a> <a href="{{ path('app_register') }}">Registration</a> 
-		{% endif %}
+		<section class="hero is-small is-primary">
+			<div class="hero-body">
+				<div class="title">
+					<p class="title is-2">
+						<a class="has-text-link-light" href="{{ path('homepage') }}">Gallery</a>
+					</p>
+					<p class="subtitle pt-1">
+						{% if app.user %}
+							Hello, {{app.user}} |
+							<a class="has-text-danger-light" href="/logout">Logout</a>
+						{% else %}
+							Hello, guest |
+							<a class="has-text-link-light" href="{{ path('app_login') }}">Login</a>
+							<a class="has-text-link-light" href="{{ path('app_register') }}">Registration</a>
+						{% endif %}
+					</p>
+				</div>
+			</div>
+		</section>
 		{% block body %}{% endblock %}
 	</body>
 </html>

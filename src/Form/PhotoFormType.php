@@ -16,13 +16,14 @@ class PhotoFormType extends AbstractType
     {
         $builder
             ->add('path', FileType::class, 
-            [
-                'required' => false,
-                'mapped' => false,
+            [   'label'=>false,
+                'required' => true,
                 'constraints' => [new Image()],
             ])
-            ->add('submit', SubmitType::class)
-        ;
+            ->add('submit', SubmitType::class,
+            ['label' => 'Добавить',
+            'attr' => array('class'=>'button is-primary is-outlined is-small mt-2')
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

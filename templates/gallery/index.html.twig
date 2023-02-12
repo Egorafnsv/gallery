@@ -1,47 +1,80 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{% endblock %}
+{% block title %}Gallery - main{% endblock %}
 
 {% block body %}
-	<style>
-		.example-wrapper {
-			margin: 1em auto;
-			max-width: 800px;
-			width: 95%;
-			font: 18px / 1.5 sans-serif;
-		}
-		.example-wrapper code {
-			background: #F5F5F5;
-			padding: 2px 6px;
-		}
-	</style>
-
-	<div class="example-wrapper">
-		{% if app.user %}
-			<h1>{{app.user}}</h1>
-		{% else %}
-			<h1>guest</h2>
-		{% endif %}
-
-		{% if user_albums|length > 0 %}
-			<form method="post" action="{{path('delete_album')}}" onsubmit="return confirm('Альбом и все его фотографии будут удалены. Продолжить?');">
+	<form method="post" action="{{path('delete_album')}}" onsubmit="return confirm('Альбом и все его фотографии будут удалены. Продолжить?');">
+	<table class="table is-fullwidth">
+		<thead>
+			<tr>
+				<th>Название</th>
+				<th>
+					<abbr title="Количество фотографий в альбоме">Размер</abbr>
+				</th>
+				<th>
+					Дата создания
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% if user_albums|length > 0 %}
 				{% for album in user_albums %}
-					<a href="{{ path('album', {id: album.id}) }}">{{album.name}}</a>
-					<button type="submit" name="delete_album" value="{{album.id}}">удалить</button>
-					<br>
+					<tr>
+						<td>
+							<a href="{{ path('album', {id: album.id}) }}">{{album.name}}</a>
+							<button class="delete is-small" type="submit" name="delete_album" value="{{album.id}}">удалить</button>
+						</td>
+						<td>{{album.size}}</td>
+						<td>
+							{{album.created_at|format_datetime('medium', 'short')}}
+						</td>
+					</tr>
 				{% endfor %}
-			</form>
-		{% else %}
-			Пока без альбомов!
-		{% endif %}
+			{% else %}
+				<tr>
+					<td colspan="3">Не создано ни одного пользовательского альбома
+						{% if not app.user %}
+							<a href="{{ path('app_register') }}">(нужен аккаунт)</a>
+						{% endif %}
+					</td>
+				</tr>
+			{% endif %}
+	</form>
+	
+			{% if app.user %}
+				<tr>
+					<td colspan="1" style="border-bottom: none;">
+						{{ form(album_form) }}
+						</td>
+					</td>
+				</tr>
+			{% endif %}
 
-		{% if app.user %}
-			{{form(album_form)}}{% endif %}
+			<tr>
+				<td class="pt-5" colspan="3" style="font-weight:bold; border-top: none;">
+					Альбомы других пользователей
+				</td>
+			</tr>
 
-			{% for album in all_albums %}
-				<a href="{{ path('album', {id: album.id}) }}">{{album.name}}</a>
-				<br>
-			{% endfor %}
-
-		</div>
-	{% endblock %}
+			{% if all_albums|length > 0 %}
+				{% for album in all_albums %}
+					<tr>
+						<td>
+							<a href="{{ path('album', {id: album.id}) }}">{{album.name}}</a>
+						</td>
+						<td>{{album.size}}</td>
+						<td>
+							{{album.created_at|format_datetime('medium', 'short')}}
+						</td>
+					</tr>
+				{% endfor %}
+			{% else %}
+				<tr>
+					<td colspan="3">Не создано ни одного альбома</td>
+				</tr>
+			{% endif %}
+			<tr>{# для границы #}</tr>
+			
+		</tbody>
+	</table>
+{% endblock %}

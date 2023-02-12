@@ -55,12 +55,12 @@ class GalleryController extends AbstractController
 
         if ($this->isGranted('IS_AUTHENTICATED')){
             $user_id = $this->getUser()->getId();
-            $user_albums = $albumsRepository->findBy(['owner'=>$user_id]);
+            $user_albums = $albumsRepository->findUserAlbums($user_id);
             $all_albums =  $albumsRepository->findAllExceptOwner($this->getUser()->getId());
         }
         else{
             $user_albums = [];
-            $all_albums = $albumsRepository->findAll(); 
+            $all_albums = $albumsRepository->findAllWithSize(); 
         }
 
         return $this->render('gallery/index.html.twig', [
@@ -77,10 +77,13 @@ class GalleryController extends AbstractController
     public function show_album(Request $request, PhotosRepository $photosRepository, AlbumsRepository $albumsRepository, 
     int $id, string $photoDir): Response
     {
-        $photos = $photosRepository->findBy(['album' => $id]);
         $album = $albumsRepository->find($id);
 
-        
+        if (!$album){
+            throw $this->createNotFoundException('Альбома с таким id не найдено');
+        }
+
+        $photos = $photosRepository->findBy(['album' => $id]);
         $photo = new Photos();
         $form = $this->createForm(PhotoFormType::class, $photo);
         $form->handleRequest($request);
@@ -122,14 +125,20 @@ class GalleryController extends AbstractController
     */
     public function edit_album(Request $request, PhotosRepository $photosRepository, AlbumsRepository $albumsRepository, int $id): Response
     {
-        if (!($this->isGranted('IS_AUTHENTICATED') &&
+        $album = $albumsRepository->find($id);
+
+        if (!$album){
+            throw $this->createNotFoundException('Альбома с таким id не найдено');
+        }
+
+        if ($album && !($this->isGranted('IS_AUTHENTICATED') &&
         $albumsRepository->find($id)->getOwner() == $this->getUser()->getUserIdentifier())){
             return $this->redirectToRoute('homepage');
         }
 
         $photos = $photosRepository->findBy(['album' => $id]);
-        $albums = $albumsRepository->findUserAlbumsExceptCurrent($this->getUser()->getId(), $id);
-        $album = $albumsRepository->find($id);
+        $albums = $albumsRepository->findAlbumsExceptCurrent($this->getUser()->getId(), $id);
+        
 
         if ($request->getMethod() == "POST"){
             $new_name = $request->get("new_name");
@@ -141,7 +150,7 @@ class GalleryController extends AbstractController
             'controller_name' => 'GalleryController',
             'photos' => $photos,
             'albums' => $albums,
-            'album' => $album,
+            'current_album' => $album,
          ]);
     }
 

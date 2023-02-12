@@ -4,34 +4,33 @@
 
 {% block body %}
 	<style>
-		.example-wrapper {
-			margin: 1em auto;
-			max-width: 800px;
-			width: 95%;
-			font: 18px / 1.5 sans-serif;
-		}
-		.example-wrapper code {
-			background: #F5F5F5;
-			padding: 2px 6px;
-		}
-		img {
-			width: 50%;
+		table img {
+			width: 100%;
 			height: auto;
+		}
+
+		.container {
+			width: 35%;
 		}
 	</style>
 
-	<div class="example-wrapper">
-
-		<h1>
-			<a href="{{path('album', {id: album.id})}}">{{album.name}}</a>
+	<div class="container is-centered">
+		<h1 class="title mt-2">
+			<a href="{{path('album', {id: current_album.id})}}">{{current_album.name}}</a>
 		</h1>
-		<form method="post" action="{{path('edit_album', {id: album.id})}}">
-			<input type="text" id="new_name" name="new_name" required size="10">
-			<button type="submit">переименовать альбом</button>
+		<form method="post" action="{{path('edit_album', {id: current_album.id})}}">
+			<div class="field has-addons">
+				<div class="control">
+					<input class="input" type="text" placeholder="Новое название" id="new_name" name="new_name" required>
+				</div>
+				<div class="control">
+					<button class="button is-info" type="submit">переименовать</button>
+				</div>
+			</div>
 		</form>
 
 		{% if photos|length > 0 %}
-			<table>
+			<table class="table is-hoverable mt-2">
 				{% for photo in photos %}
 					<tbody>
 						<tr>
@@ -42,17 +41,25 @@
 							</td>
 							<td>
 								<form method="post" action="{{path('delete_photo')}}">
-									<button type="submit" name="delete_photo" value="{{photo.id}}">удалить фото</button>
+									<button class="button is-danger is-light is-small" type="submit" name="delete_photo" value="{{photo.id}}">удалить фото</button>
 								</form>
 							</td>
 							<td>
 								<form method="post" action="{{path('edit_photo')}}">
-									<select name="select_album">
-										{% for album in albums %}
-											<option value="{{album.id}}">{{album.name}}</option>
-										{% endfor %}
-									</select>
-									<button type="submit" name="edit_photo" value="{{photo.id}}">переместить</button>
+									<div class="control has-icons-left">
+										<div class="select is-small is-black">
+
+											<select name="select_album" required>
+												{% for album in albums %}
+													<option value="{{album.id}}">{{album.name}}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<span class="icon has-text-black is-left">
+											<ion-icon name="albums-outline"></ion-icon>
+										</span>
+									</div>
+									<button class="button is-small mt-2" type="submit" name="edit_photo" value="{{photo.id}}">переместить</button>
 								</form>
 							</td>
 						</tr>
@@ -61,10 +68,9 @@
 
 				{% endfor %}
 			</table>
-		{% else %}
-			Пока без фоток!
 		{% endif %}
 	</div>
 
-
+	<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+	<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 {% endblock %}

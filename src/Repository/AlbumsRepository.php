@@ -38,14 +38,17 @@ class AlbumsRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-    public function findAllExceptOwner(int $id): array
+
+    public function findUserAlbums(int $id): array
     {
         $conn = $this->getEntityManager()->getConnection();
 
         $psql = '
-            SELECT * FROM albums a
-            WHERE a.owner_id != :id
-            ORDER BY a.created_at
+            SELECT a.id, a.name, COUNT(ph.id) as size, a.created_at 
+            FROM albums a LEFT JOIN photos ph ON a.id = ph.album_id
+            WHERE a.owner_id = :id
+            GROUP BY a.id, a.name, a.created_at
+            ORDER BY a.created_at DESC;
             ';
         $stmt = $conn->prepare($psql);
         $resultSet = $stmt->executeQuery(['id' => $id]);
@@ -53,14 +56,47 @@ class AlbumsRepository extends ServiceEntityRepository
         return $resultSet->fetchAllAssociative();
     }
 
-    public function findUserAlbumsExceptCurrent(int $owner_id, int $album_id): array
+    public function findAllExceptOwner(int $id): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $psql = '
+            SELECT a.id, a.name, COUNT(ph.id) as size, a.created_at 
+            FROM albums a LEFT JOIN photos ph ON a.id = ph.album_id
+            WHERE a.owner_id != :id
+            GROUP BY a.id, a.name, a.created_at
+            ORDER BY a.created_at DESC;
+            ';
+        $stmt = $conn->prepare($psql);
+        $resultSet = $stmt->executeQuery(['id' => $id]);
+
+        return $resultSet->fetchAllAssociative();
+    }
+    
+    public function findAllWithSize(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $psql = '
+            SELECT a.id, a.name, COUNT(ph.id) as size, a.created_at 
+            FROM albums a LEFT JOIN photos ph ON a.id = ph.album_id 
+            GROUP BY a.id, a.name, a.created_at
+            ORDER BY a.created_at DESC';
+            
+        $stmt = $conn->prepare($psql);
+        $resultSet = $stmt->executeQuery();
+
+        return $resultSet->fetchAllAssociative();
+    }
+
+    public function findAlbumsExceptCurrent(int $owner_id, int $album_id): array
     {
         $conn = $this->getEntityManager()->getConnection();
 
         $psql = '
             SELECT * FROM albums a
             WHERE a.owner_id = :owner_id AND a.id != :album_id
-            ORDER BY a.created_at
+            ORDER BY a.name
             ';
             
         $stmt = $conn->prepare($psql);
@@ -68,6 +104,8 @@ class AlbumsRepository extends ServiceEntityRepository
 
         return $resultSet->fetchAllAssociative();
     }
+
+    
 
 //    /**
 //     * @return Albums[] Returns an array of Albums objects
