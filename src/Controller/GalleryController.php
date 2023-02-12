@@ -6,7 +6,6 @@ use App\Entity\Albums;
 use App\Entity\Photos;
 use App\Form\AlbumFormType;
 use App\Form\PhotoFormType;
-use App\Form\UpdateFormType;
 use App\Repository\AlbumsRepository;
 use App\Repository\PhotosRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,9 +16,6 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-use App\Entity\Users;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class GalleryController extends AbstractController
 {
