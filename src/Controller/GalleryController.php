@@ -75,6 +75,10 @@ class GalleryController extends AbstractController
     {
         $album = $albumsRepository->find($id);
 
+        if($this->getUser()->getId() != $album->getOwner()->getId()){
+            throw $this->createAccessDeniedException('Недостаточно прав');
+        }
+
         if (!$album){
             throw $this->createNotFoundException('Альбома с таким id не найдено');
         }
@@ -126,10 +130,10 @@ class GalleryController extends AbstractController
         if (!$album){
             throw $this->createNotFoundException('Альбома с таким id не найдено');
         }
-
+        
         if ($album && !($this->isGranted('IS_AUTHENTICATED') &&
         $albumsRepository->find($id)->getOwner() == $this->getUser()->getUserIdentifier())){
-            return $this->redirectToRoute('homepage');
+            throw $this->createAccessDeniedException('Недостаточно прав');
         }
 
         $photos = $photosRepository->findBy(['album' => $id]);
@@ -150,13 +154,16 @@ class GalleryController extends AbstractController
          ]);
     }
 
-
     /**
      * @Route("/delete-album", name="delete_album")
      */
     public function delete_album(Request $request, AlbumsRepository $albumsRepository, PhotosRepository $photosRepository, string $photoDir){
         $album_id = $request->get("delete_album");
         $album = $albumsRepository->find($album_id);
+
+        if($this->getUser()->getId() != $album->getOwner()->getId()){
+            throw $this->createAccessDeniedException('Недостаточно прав');
+        }
 
         $photos = $photosRepository->findBy(['album' => $album_id]);
 
@@ -180,11 +187,14 @@ class GalleryController extends AbstractController
      */
     public function delete_photo(Request $request, PhotosRepository $photosRepository, string $photoDir){
         $photo_id = $request->get("delete_photo");
-        
-        $filesystem = new Filesystem();
-        
         $photo = $photosRepository->find($photo_id);
 
+        if($this->getUser()->getId() != $photo->getAlbum()->getOwner()->getId()){
+            throw $this->createAccessDeniedException('Недостаточно прав');
+        }
+
+        $filesystem = new Filesystem();
+        
         $this->entityManager->remove($photo);
         $this->entityManager->flush();
      
@@ -202,12 +212,16 @@ class GalleryController extends AbstractController
      */
     public function edit_photo(Request $request, PhotosRepository $photosRepository, AlbumsRepository $albumsRepository){
         $photo_id = $request->get("edit_photo");
-        $new_album = $request->get("select_album");
-        
         $photo = $photosRepository->find($photo_id);
-        $old_album = $photo->getAlbum()->getId();
-        $photo->setAlbum($albumsRepository->find($new_album));
 
+        if($this->getUser()->getId() != $photo->getAlbum()->getOwner()->getId()){
+            throw $this->createAccessDeniedException('Недостаточно прав');
+        }
+
+        $new_album = $request->get("select_album");
+        $old_album = $photo->getAlbum()->getId();
+
+        $photo->setAlbum($albumsRepository->find($new_album));
         $this->entityManager->flush();
      
         return $this->redirectToRoute('edit_album', ['id' => $old_album]);
