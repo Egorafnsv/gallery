@@ -75,10 +75,6 @@ class GalleryController extends AbstractController
     {
         $album = $albumsRepository->find($id);
 
-        if($this->getUser()->getId() != $album->getOwner()->getId()){
-            throw $this->createAccessDeniedException('Недостаточно прав');
-        }
-
         if (!$album){
             throw $this->createNotFoundException('Альбома с таким id не найдено');
         }
